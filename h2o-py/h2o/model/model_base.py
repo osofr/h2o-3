@@ -781,11 +781,11 @@ class ModelBase(object):
         # features labels correspond to the first value of each tuple in the importances list
         feature_labels = [tup[0] for tup in importances]
         # relative importances correspond to the first value of each tuple in the importances list
-        relative_importances = [tup[1] for tup in importances]
+        scaled_importances = [tup[2] for tup in importances]
         # specify bar centers on the y axis, but flip the order so largest bar appears at top
         pos = range(len(feature_labels))[::-1]
         # specify the bar lengths
-        val = relative_importances
+        val = scaled_importances
 
         # check that num_of_features is an integer
         if num_of_features == None:
@@ -793,7 +793,7 @@ class ModelBase(object):
         elif type(num_of_features) != int:
           raise ValueError("num_of_featues must be an integer")
 
-        fig, ax = plt.subplots(1,1, figsize=(14,10))
+        fig, ax = plt.subplots(1, 1, figsize=(14, 10))
         # create separate plot for the case where num_of_features = 1
         if num_of_features == 1:
             plt.barh(pos[0:num_of_features], val[0:num_of_features], align='center',
@@ -899,7 +899,7 @@ class ModelBase(object):
             raise ValueError("num_of_featues must be an integer")
 
         # plot horizontal plot
-        fig, ax = plt.subplots(1, 1)
+        fig, ax = plt.subplots(1, 1, figsize=(14, 10))
         # create separate plot for the case where num_of_features = 1
         if num_of_features == 1:
             plt.barh(pos[0], val[0],
@@ -927,7 +927,6 @@ class ModelBase(object):
             ax.yaxis.set_ticks_position('left')
             ax.xaxis.set_ticks_position('bottom')
             plt.yticks(pos[0:num_of_features], feature_labels[0:num_of_features])
-            # plt.axis('tight')
             ax.margins(y=0.05)
 
         # generate custom fake lines that will be used as legend entries:
