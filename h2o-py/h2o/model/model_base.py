@@ -790,8 +790,8 @@ class ModelBase(object):
         # check that num_of_features is an integer
         if num_of_features == None:
           num_of_features = len(val)
-        elif type(num_of_features) != int:
-          raise ValueError("num_of_featues must be an integer")
+        elif (type(num_of_features) != int) or (num_of_features <= 0):
+          raise ValueError("num_of_features must be an integer greater than 0")
 
         fig, ax = plt.subplots(1, 1, figsize=(14, 10))
         # create separate plot for the case where num_of_features = 1
@@ -895,8 +895,8 @@ class ModelBase(object):
         # check number of features, default is all the features
         if num_of_features is None:
             num_of_features = len(val)
-        elif type(num_of_features) != int:
-            raise ValueError("num_of_featues must be an integer")
+        elif (type(num_of_features) != int) or (num_of_features <= 0):
+            raise ValueError("num_of_features must be an integer greater than 0")
 
         # plot horizontal plot
         fig, ax = plt.subplots(1, 1, figsize=(14, 10))
