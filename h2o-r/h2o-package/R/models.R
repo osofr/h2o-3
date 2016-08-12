@@ -2379,7 +2379,7 @@ h2o.varimp_plot <- function(model, num_of_features = NULL){
 
   # check if num_of_features was passed as an integer, otherwise use all features
   if(is.null(num_of_features)) {num_of_features = length(vi$variable)}
-  else if ((num_of_features != round(num_of_features)) || (num_of_features <= 0)) stop("num_of_featues must be an integer greater than 0")
+  else if ((num_of_features != round(num_of_features)) || (num_of_features <= 0)) stop("num_of_features must be an integer greater than 0")
 
   # check the model type and then update the model title
   if(model@algorithm[1] == "deeplearning") {title = "Variable Importance: Deep Learning"}
@@ -2457,7 +2457,7 @@ h2o.std_coef_plot <- function(model, num_of_features = NULL){
 
   # check if num_of_features was passed as an integer, otherwise use all features
   if(is.null(num_of_features)) {num_of_features = length(norm_coef)}
-  else if (num_of_features != round(num_of_features)) stop("num_of_featues must be an integer")
+  else if ((num_of_features != round(num_of_features)) || (num_of_features <= 0)) stop("num_of_features must be an integer greater than 0")
 
   # initialize a vector of color codes, based on norm_coef values
   color_code <- c()
