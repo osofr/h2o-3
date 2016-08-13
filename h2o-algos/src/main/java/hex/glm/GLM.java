@@ -343,8 +343,8 @@ public class GLM extends ModelBuilder<GLMModel,GLMParameters,GLMOutput> {
         error("_response", H2O.technote(2, "Regression requires numeric response, got categorical."));
       switch (_parms._family) {
         case binomial:
-          if (!_response.isBinary() && _nclass != 2)
-            error("_family", H2O.technote(2, "Binomial requires the response to be a 2-class categorical or a binary column (0/1)"));
+          // if (!_response.isBinary() && _nclass != 2)
+          //   error("_family", H2O.technote(2, "Binomial requires the response to be a 2-class categorical or a binary column (0/1)"));
           break;
         case multinomial:
           if (_nclass <= 2)

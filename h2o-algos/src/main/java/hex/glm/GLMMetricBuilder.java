@@ -189,10 +189,11 @@ public class GLMMetricBuilder extends MetricBuilderSupervised<GLMMetricBuilder> 
       if (preds!=null) {
         Vec resp = f.vec(m._parms._response_column);
         Vec weights = f.vec(m._parms._weights_column);
-        if (resp != null) {
-          gl = new GainsLift(preds.lastVec(), resp, weights);
-          gl.exec(m._output._job);
-        }
+        // sofrygin 06/21/2016: preventing error that occurs with logistic regression for numeric response
+        // if (resp != null) {
+        //   gl = new GainsLift(preds.lastVec(), resp, weights);
+        //   gl.exec(m._output._job);
+        // }
       }
       metrics = new ModelMetricsBinomialGLM(m, f, metrics._nobs, metrics._MSE, _domain, metricsBinommial._sigma, metricsBinommial._auc, metricsBinommial._logloss, residualDeviance(), null_devince, _aic, nullDOF(), resDOF(), gl);
     } else if( _glmf._family == Family.multinomial) {

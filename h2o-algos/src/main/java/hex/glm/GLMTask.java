@@ -670,10 +670,16 @@ public abstract class GLMTask  {
     protected void computeGradientMultipliers(double[] es, double[] ys, double[] ws) {
       for(int i = 0; i < es.length; ++i) {
         if(Double.isNaN(ys[i]) || ws[i] == 0){es[i] = 0; continue;}
-        double e = es[i], y = 1 - 2*ys[i], w = ws[i];
-        double d = 1 + Math.exp(y*e);
-        _likelihood += w*Math.log(d);
-        es[i] = w*y*(1-1.0/d);
+        // double e = es[i], y = 1 - 2*ys[i], w = ws[i];
+        double e = es[i], y = ys[i], w = ws[i];
+        // double d = 1 + Math.exp(y*e);
+        double p = 1 / (Math.exp(-e) + 1);
+        // _likelihood += w*Math.log(d);
+        // new likelihood to allow continuous y:
+        _likelihood += w * (+1.0 * (MathUtils.y_log_y(y, p) + MathUtils.y_log_y(1 - y, 1 - p)));
+        // es[i] = w*y*(1-1.0/d);
+        // new gradient for continuous y:
+        es[i] = w * (-1.0) * (y - p);
       }
     }
   }

@@ -627,7 +627,10 @@ public class GLMModel extends Model<GLMModel,GLMModel.GLMParameters,GLMModel.GLM
       x.z = eta + (y - x.mu) * d;
       if(_family == Family.binomial && _link == Link.logit) {
         // use the same likelihood computation as GLMBinomialGradientTask to have exactly the same values for same inputs
-        x.l = w * Math.log(1 + Math.exp((etaOff - 2 * y * etaOff)));
+        // x.l = w * Math.log(1 + Math.exp((etaOff - 2 * y * etaOff)));
+        // replaced with new likelihood to allow continuous y:
+        double p = 1 / (Math.exp(-etaOff) + 1);
+        x.l = w * (+1.0 * (MathUtils.y_log_y(y, p) + MathUtils.y_log_y(1 - y, 1 - p)));
         x.dev = 2*x.l;
       } else {
         x.l = w * likelihood(y, x.mu);
