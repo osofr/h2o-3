@@ -10,10 +10,12 @@ public class ModelMetricsRegression extends ModelMetricsSupervised {
   public double residual_deviance() { return _mean_residual_deviance; }
   public final double _mean_residual_deviance;
   public final double _mean_absolute_error;
-  public ModelMetricsRegression(Model model, Frame frame, long nobs, double mse, double sigma, double mae, double meanResidualDeviance) {
+  public final double _root_mean_squared_log_error;
+  public ModelMetricsRegression(Model model, Frame frame, long nobs, double mse, double sigma, double mae,double rmsle, double meanResidualDeviance) {
     super(model, frame, nobs, mse, null, sigma);
     _mean_residual_deviance = meanResidualDeviance;
     _mean_absolute_error = mae;
+    _root_mean_squared_log_error = rmsle;
   }
 
   public static ModelMetricsRegression getFromDKV(Model model, Frame frame) {
@@ -32,6 +34,7 @@ public class ModelMetricsRegression extends ModelMetricsSupervised {
     sb.append(super.toString());
     sb.append(" mean residual deviance: " + (float)_mean_residual_deviance + "\n");
     sb.append(" mean absolute error: " + (float)_mean_absolute_error + "\n");
+    sb.append(" root mean squared log error: " + (float)_root_mean_squared_log_error + "\n");
     return sb.toString();
   }
 
@@ -84,6 +87,7 @@ public class ModelMetricsRegression extends ModelMetricsSupervised {
     double _sumdeviance;
     Distribution _dist;
     double _abserror;
+    double _rmsleerror;
     public MetricBuilderRegression() {
       super(1,null); //this will make _work = new float[2];
     }
@@ -100,8 +104,10 @@ public class ModelMetricsRegression extends ModelMetricsSupervised {
       if(w == 0 || Double.isNaN(w)) return ds;
       // Compute error
       double err = yact[0] - ds[0]; // Error: distance from the actual
+      double err_msle = Math.pow((Math.log(ds[0] + 1) - Math.log(yact[0] + 1)),2); //Squared log error
       _sumsqe += w*err*err;       // Squared error
       _abserror += Math.abs(err);
+      _rmsleerror += err_msle;
       assert !Double.isNaN(_sumsqe);
       if (m!=null && m._parms._distribution!=Distribution.Family.huber)
         _sumdeviance += m.deviance(w, yact[0], ds[0]);
@@ -118,12 +124,14 @@ public class ModelMetricsRegression extends ModelMetricsSupervised {
       super.reduce(mb);
       _sumdeviance += mb._sumdeviance;
       _abserror += mb._abserror;
+      _rmsleerror += mb._rmsleerror;
     }
 
     // Having computed a MetricBuilder, this method fills in a ModelMetrics
     public ModelMetrics makeModelMetrics(Model m, Frame f, Frame adaptedFrame, Frame preds) {
       double mse = _sumsqe / _wcount;
       double mae = _abserror/_wcount; //Mean Absolute Error
+      double rmsle = Math.sqrt(_rmsleerror/_wcount); //Root Mean Squared Log Error
       if (adaptedFrame ==null) adaptedFrame = f;
       double meanResDeviance = 0;
       if (m!=null && m._parms._distribution== Distribution.Family.huber) {
@@ -147,7 +155,7 @@ public class ModelMetricsRegression extends ModelMetricsSupervised {
       } else {
           meanResDeviance = _sumdeviance / _wcount; //mean residual deviance
       }
-      ModelMetricsRegression mm = new ModelMetricsRegression(m, f, _count, mse, weightedSigma(), mae, meanResDeviance);
+      ModelMetricsRegression mm = new ModelMetricsRegression(m, f, _count, mse, weightedSigma(), mae, rmsle, meanResDeviance);
       if (m!=null) m._output.addModelMetrics(mm);
       return mm;
     }
